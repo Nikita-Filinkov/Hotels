@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Request, Depends
-
+from datetime import date
 from app.bookings.dependencies import get_current_user
 from app.bookings.service import BookingsService
 from app.bookings.shemas import SBookings
+from app.exceptions import RoomCannotBeBooked
 from app.users.models import Users
 from app.users.shemas import UserShortResponse
 
@@ -24,6 +25,8 @@ def get_bookings2(bookings_id):
 
 @router.post('/add')
 async def add_booking(
-        user: Users = Depends(get_current_user)
+         room_id: int, date_from: date, date_to: date, user: Users = Depends(get_current_user)
 ):
-    await BookingsService.add()
+    booking = await BookingsService.add(user.id, room_id, date_from, date_to)
+    if not booking:
+        raise RoomCannotBeBooked
