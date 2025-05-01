@@ -1,17 +1,17 @@
 from app.database import async_session_maker
-from app.hotels.models import Hotels
+from app.hotels.rooms.models import Rooms
 from app.service.base import BaseService
 
 from sqlalchemy import update
 
 
-class HotelsService(BaseService):
-    model = Hotels
+class RoomsService(BaseService):
+    model = Rooms
 
     @classmethod
-    async def update_one_entry(cls, hotel_id, **data):
+    async def update_one_entry(cls, hotel_id, name, **data):
         async with async_session_maker() as session:
-            query = update(cls.model).filter_by(id=hotel_id).values(**data)
+            query = update(cls.model).filter_by(hotel_id=hotel_id, name=name).values(**data)
             result = await session.execute(query).returning(cls.model)
             await session.commit()
             return result.rowcount
