@@ -17,7 +17,7 @@ router = APIRouter(
 # hotel_args: HotelsArgs = Depends()
 
 
-@router.get('/id/{hotel_id}', response_model=list[SOneHotels])
+@router.get('/id/{hotel_id}', response_model=SOneHotels)
 async def get_one_hotel(hotel_id: int):
     hotel = await HotelsService.find_by_id(model_id=hotel_id)
     return hotel
@@ -34,4 +34,5 @@ async def hotels_on_location(
         date_from=date_from,
         date_to=date_to
     )
+
     return free_hotels

@@ -13,24 +13,31 @@ class BookingsService(BaseService):
     model = Bookings
 
     @classmethod
-    async def _get_booked_rooms(cls, date_from, date_to):
-        booked_rooms: CTE = select(cls.model).where(
-            and_(
-                cls.model.room_id == 1,
-                or_(
-                    and_(
-                        cls.model.date_from <= date_from,
-                        cls.model.date_to >= date_from
-                    ),
-                    and_(
-                        cls.model.date_from >= date_from,
-                        cls.model.date_from <= date_to
-                    )
-
-                )
+    async def get_bookings_user(cls, user_id):
+        async with async_session_maker() as session:
+            query = select(
+                cls.model.room_id,
+                cls.model.user_id,
+                cls.model.date_from,
+                cls.model.date_to,
+                cls.model.price,
+                cls.model.total_cost,
+                cls.model.total_days,
+                Rooms.image_id,
+                Rooms.name,
+                Rooms.description,
+                Rooms.services
+            ).select_from(cls.model).join(
+                Rooms, cls.model.room_id == Rooms.id
+            ).where(
+                cls.model.user_id == user_id
             )
-        ).cte("booked_rooms")
-        return booked_rooms
+
+            result = await session.execute(query)
+            if result:
+                return result
+            else:
+                return None
 
     @classmethod
     async def add(

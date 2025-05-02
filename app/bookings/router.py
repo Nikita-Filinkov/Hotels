@@ -3,7 +3,7 @@ from datetime import date
 from app.bookings.dependencies import get_current_user
 from app.bookings.service import BookingsService
 from app.bookings.shemas import SBookings
-from app.exceptions import RoomCannotBeBooked
+from app.exceptions import RoomCannotBeBooked, BookingsCannotFound, ProhibitedDeleteException
 from app.users.models import Users
 from app.users.shemas import UserShortResponse
 
@@ -13,9 +13,13 @@ router = APIRouter(
 )
 
 
-@router.get('')
-async def get_bookings(user: Users = Depends(get_current_user)) -> list[SBookings]:
-    return await BookingsService.get_all(user_id=user.id)
+@router.get('', response_model=list[SBookings])
+async def get_bookings(user: Users = Depends(get_current_user)):
+    bookings = await BookingsService.get_bookings_user(user_id=user.id)
+    if not bookings:
+        raise BookingsCannotFound
+    bookings_list = bookings.mappings().all()
+    return bookings_list
 
 
 @router.get('/{bookings_id}')
@@ -30,3 +34,10 @@ async def add_booking(
     booking = await BookingsService.add(user.id, room_id, date_from, date_to)
     if not booking:
         raise RoomCannotBeBooked
+
+
+@router.delete('/{booking_id}', status_code=204)
+async def delete_booking(booking_id: int, user: Users = Depends(get_current_user)):
+    deleted_entry = await BookingsService.delete_one_entry(id=booking_id, user_id=user.id)
+    if not deleted_entry:
+        raise ProhibitedDeleteException
