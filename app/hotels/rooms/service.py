@@ -15,3 +15,5 @@ class RoomsService(BaseService):
             result = await session.execute(query).returning(cls.model)
             await session.commit()
             return result.rowcount
+
+

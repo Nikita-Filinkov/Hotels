@@ -22,11 +22,6 @@ def get_jwt_token(request: Request):
 
 async def get_current_user(token: str = Depends(get_jwt_token)):
 
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"}, )
-
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
     except InvalidTokenError:

@@ -5,12 +5,32 @@ from sqlalchemy.sql.expression import CTE
 
 from app.bookings.models import Bookings
 from app.database import engine, async_session_maker
-from app.hotels.models import Rooms
+from app.hotels.rooms.models import Rooms
 from app.service.base import BaseService
 
 
 class BookingsService(BaseService):
     model = Bookings
+
+    @classmethod
+    async def _get_booked_rooms(cls, date_from, date_to):
+        booked_rooms: CTE = select(cls.model).where(
+            and_(
+                cls.model.room_id == 1,
+                or_(
+                    and_(
+                        cls.model.date_from <= date_from,
+                        cls.model.date_to >= date_from
+                    ),
+                    and_(
+                        cls.model.date_from >= date_from,
+                        cls.model.date_from <= date_to
+                    )
+
+                )
+            )
+        ).cte("booked_rooms")
+        return booked_rooms
 
     @classmethod
     async def add(
@@ -37,29 +57,14 @@ class BookingsService(BaseService):
 
         """
         async with async_session_maker() as session:
-            booked_rooms: CTE = select(Bookings).where(
-                and_(
-                    Bookings.room_id == 1,
-                    or_(
-                        and_(
-                            Bookings.date_from <= date_from,
-                            Bookings.date_to >= date_from
-                        ),
-                        and_(
-                            Bookings.date_from >= date_from,
-                            Bookings.date_from <= date_to
-                        )
-
-                    )
-                )
-            ).cte("booked_rooms")
+            booked_rooms: CTE = await cls._get_booked_rooms(date_from, date_to)
 
             get_rooms_left = select(
                 (Rooms.quantity - func.count(booked_rooms.c.room_id)).label("rooms_left")
             ).select_from(Rooms).join(
                 booked_rooms, Rooms.id == booked_rooms.c.room_id, isouter=True
             ).where(
-                Rooms.id == 1
+                Rooms.id == room_id
             ).group_by(
                 Rooms.quantity, Rooms.id
             )
@@ -89,3 +94,5 @@ class BookingsService(BaseService):
                 return new_booking
             else:
                 return None
+
+

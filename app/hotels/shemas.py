@@ -4,7 +4,17 @@ from datetime import date
 from fastapi import Query
 
 
-class SHotel(BaseModel):
+class SHotels(BaseModel):
+    id: int
+    name: str
+    locations: str
+    services: list[str]
+    rooms_quantity: int
+    image_id: int
+    free_rooms: int
+
+
+class SOneHotels(BaseModel):
     id: int
     name: str
     locations: str

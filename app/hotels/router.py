@@ -1,33 +1,37 @@
 from __future__ import annotations
 
+from datetime import date
+
 from fastapi import APIRouter, Depends
 
-from app.hotels.shemas import HotelsArgs, SHotel
+from app.hotels.shemas import HotelsArgs, SOneHotels, SHotels
 from app.hotels.service import HotelsService
+from app.users.models import Users
+from app.bookings.dependencies import get_current_user
 
 router = APIRouter(
     prefix='/hotels',
     tags=['Hotels']
 )
+# user: Users = Depends(get_current_user),
+# hotel_args: HotelsArgs = Depends()
 
 
-@router.get('', response_model=list[SHotel])
-async def get_hotels(
-        hotel_args: HotelsArgs = Depends()
+@router.get('/id/{hotel_id}', response_model=list[SOneHotels])
+async def get_one_hotel(hotel_id: int):
+    hotel = await HotelsService.find_by_id(model_id=hotel_id)
+    return hotel
+
+
+@router.get('/{locations}', response_model=list[SHotels])
+async def hotels_on_location(
+        locations: str,
+        date_from: date,
+        date_to: date
 ):
-    filters = {}
-    if hotel_args.location:
-        filters["locations"] = hotel_args.location
-
-    # Получаем отели с базовой фильтрацией
-    hotels = await HotelsService.get_all(**filters)
-
-    # Дополнительная фильтрация по SPA
-    if hotel_args.has_spa is not None:
-        if hotel_args.has_spa:
-            hotels = [hotel for hotel in hotels
-                      if 'SPA' in hotel.services]
-        else:
-            hotels = [hotel for hotel in hotels
-                      if 'SPA' not in hotel.services]
-    return hotels
+    free_hotels = await HotelsService.get_hotels_on_location(
+        locations=locations,
+        date_from=date_from,
+        date_to=date_to
+    )
+    return free_hotels
