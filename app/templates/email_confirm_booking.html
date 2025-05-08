@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+     <h1>Подтвердите бронирование</h1>
+        Вы забронировали отель с:
+        {% for booking in bookings %}
+            {% if loop.last %}
+                <div>
+                     {{booking.date_from}} по {{booking.date_to}}.
+                </div>
+            {% else %}
+                <div>
+                     {{booking.date_from}} по {{booking.date_to}},
+                </div>
+            {% endif %}
+        {% endfor %}
+
+</body>
+</html>

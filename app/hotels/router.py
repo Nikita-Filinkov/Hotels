@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import asyncio
 from datetime import date
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
+
+from fastapi_cache.decorator import cache
 
 from app.hotels.shemas import HotelsArgs, SOneHotels, SHotels
 from app.hotels.service import HotelsService
@@ -24,11 +27,13 @@ async def get_one_hotel(hotel_id: int):
 
 
 @router.get('/{locations}', response_model=list[SHotels])
+@cache(expire=60)
 async def hotels_on_location(
         locations: str,
-        date_from: date,
-        date_to: date
+        date_from: date = Query(description=f"Например: 2023-05-15"),
+        date_to: date = Query(description=f"Например: 2023-06-30")
 ):
+    await asyncio.sleep(3)
     free_hotels = await HotelsService.get_hotels_on_location(
         locations=locations,
         date_from=date_from,

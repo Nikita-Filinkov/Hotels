@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Отели</title>
+</head>
+<body>
+    <div>
+        <h1>Отели</h1>
+        {% for hotel in free_hotels %}
+            <div style="display:flex; margin-bottom: 15px; margin-left: 10px;">
+                <img src="{{ url_for('static', path='images/' + hotel.image_id|string + '.jpg') }}"
+                alt="Фото отеля" width="300">
+                <div style="margin-left: 10px;">
+                    <h1>{{hotel.name}}</h1>
+                    <h2>{{hotel.locations}}</h2>
+                    <h3>Всего номеров: {{hotel.rooms_quantity}}</h3>
+                    <h3>Количество свободных номеров: {{hotel.free_rooms}}</h3>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>

@@ -14,6 +14,14 @@ class Settings(BaseSettings):
     SECRET_KEY: str = b64encode(token_bytes(32)).decode()
     ALGORITHM: str
 
+    REDIS_HOST: str
+    REDIS_PORT: str
+
+    SMTP_HOST: str
+    SMTP_PORT: int
+    SMTP_EMAIL: str
+    SMTP_PASS: str
+
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env"),
         extra='ignore'
