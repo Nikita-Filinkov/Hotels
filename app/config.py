@@ -15,6 +15,12 @@ class Settings(BaseSettings):
     DB_USER: str
     DB_PASS: str
 
+    TEST_DB_HOST: str = "db"
+    TEST_DB_PORT: int = 5432
+    TEST_DB_NAME: str
+    TEST_DB_USER: str
+    TEST_DB_PASS: str
+
     SECRET_KEY: str = b64encode(token_bytes(32)).decode()
     ALGORITHM: str
 
@@ -38,3 +44,8 @@ settings = Settings()
 def get_db_url():
     return (f"postgresql+asyncpg://{settings.DB_USER}:{settings.DB_PASS}@"
             f"{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}")
+
+
+def test_get_db_url():
+    return (f"postgresql+asyncpg://{settings.TEST_DB_USER}:{settings.TEST_DB_PASS}@"
+            f"{settings.TEST_DB_HOST}:{settings.TEST_DB_PORT}/{settings.TEST_DB_NAME}")
