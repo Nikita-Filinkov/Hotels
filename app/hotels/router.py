@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 from datetime import date
+from pydantic import parse_obj_as
 
 from fastapi import APIRouter, Depends, Query
 
@@ -39,5 +40,7 @@ async def hotels_on_location(
         date_from=date_from,
         date_to=date_to
     )
-
+    print(type(free_hotels[0]))
+    free_hotels = parse_obj_as(list[SHotels], free_hotels)
+    print(type(free_hotels[0]))
     return free_hotels

@@ -41,8 +41,8 @@ def create_access_token(data: dict) -> str:
 
 async def auth_user(email: EmailStr, password: str):
     user = await UsersService.find_one_or_none(email=email)
-    if not user and not verify_password(password, user.hashed_password):
-        raise None
+    if not user or not verify_password(password, user.hashed_password):
+        return None
 
     return user
 

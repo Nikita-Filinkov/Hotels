@@ -1,10 +1,14 @@
 import os
+from typing import Literal
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from secrets import token_bytes
 from base64 import b64encode
 
 
 class Settings(BaseSettings):
+    MODE: Literal["DEV", "TEST", "PROD"]
+
     DB_HOST: str = "db"
     DB_PORT: int = 5432
     DB_NAME: str

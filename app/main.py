@@ -11,7 +11,13 @@ from fastapi_cache.decorator import cache
 
 from redis import asyncio as aioredis
 
+from sqladmin import Admin, ModelView
+
+from app.admin.auth import authentication_backend
+from app.admin.views import UsersAdmin, BookingsAdmin, RoomsAdmin, HotelsAdmin
 from app.bookings.router import router as router_bookings
+from app.database import engine
+from app.users.models import Users
 from app.users.router import router as router_users
 from app.hotels.router import router as router_hotels
 from app.pages.router import router as router_pages
@@ -47,19 +53,10 @@ app.include_router(router_pages)
 app.include_router(router_images)
 
 
+admin = Admin(app, engine, authentication_backend=authentication_backend)
 
 
-
-
-# app = FastAPI(lifespan=lifespan)
-#
-#
-# @cache()
-# async def get_cache():
-#     return 1
-#
-#
-# @app.get("/")
-# @cache(expire=60)
-# async def index():
-#     return dict(hello="world")
+admin.add_view(UsersAdmin)
+admin.add_view(BookingsAdmin)
+admin.add_view(RoomsAdmin)
+admin.add_view(HotelsAdmin)

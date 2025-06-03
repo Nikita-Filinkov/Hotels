@@ -54,3 +54,9 @@ def create_access_token(data: dict) -> str:
 data = {'user': 'Nikita'}
 print(create_access_token(data))
 
+
+def create_admin_access_token(data: dict) -> str:
+    # Добавляем специальный claim для админки
+    data.update({"is_admin": True})
+    return create_access_token(data)
+

@@ -20,12 +20,14 @@ def get_jwt_token(request: Request):
     raise TokenAbsentException
 
 
-async def get_current_user(token: str = Depends(get_jwt_token)):
-
-    try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-    except InvalidTokenError:
-        raise TokenInvalidFormatException
+async def get_current_user(
+        token: str = Depends(get_jwt_token)
+):
+    payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+    # try:
+    #     payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+    # except InvalidTokenError:
+    #     raise TokenInvalidFormatException
     expire: str = payload.get('exp')
     if not expire or int(expire) < datetime.utcnow().timestamp():
         raise TokenExpiredException
