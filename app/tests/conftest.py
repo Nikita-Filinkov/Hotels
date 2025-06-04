@@ -1,9 +1,9 @@
 import asyncio
 from datetime import datetime
 import json
-from fastapi.testclient import TestClient
-from httpx import AsyncClient
 
+from asgi_lifespan import LifespanManager
+from httpx import AsyncClient, ASGITransport
 import pytest
 from sqlalchemy import insert
 
@@ -67,8 +67,12 @@ def event_loop(request):
 
 @pytest.fixture(scope="function")
 async def asyncclient():
-    async with AsyncClient(app=fastapi_app, base_url="http://test") as ac:
-        yield ac
+    async with LifespanManager(fastapi_app) as manager:
+        async with AsyncClient(
+            transport=ASGITransport(app=manager.app),
+            base_url="http://test"
+        ) as ac:
+            yield ac
 
 
 @pytest.fixture(scope="function")
