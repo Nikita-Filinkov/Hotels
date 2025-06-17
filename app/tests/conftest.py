@@ -75,6 +75,17 @@ async def asyncclient():
             yield ac
 
 
+@pytest.fixture(scope="session")
+async def auth_asyncclient():
+    async with LifespanManager(fastapi_app) as manager:
+        async with AsyncClient(
+            transport=ASGITransport(app=manager.app),
+            base_url="http://test"
+        ) as auth_ac:
+            await auth_ac.post(url='/auth/login', json={"email": "test@test.com", "password": "test"})
+            yield auth_ac
+
+
 @pytest.fixture(scope="function")
 async def session():
     async with async_session_maker() as session:

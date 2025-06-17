@@ -14,7 +14,7 @@
         "description": "Лучший номер отеля.",
         "price": 22450,
         "services": ["Бесплатный Wi‑Fi", "Кондиционер"],
-        "quantity": 10,
+        "quantity": 0,
         "image_id": 8
     },
     {

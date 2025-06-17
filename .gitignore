@@ -160,3 +160,4 @@ cython_debug/
 .idea/
 /think/posts/garbage.py
 /think/users/garbage.py
+/app/garbage.py

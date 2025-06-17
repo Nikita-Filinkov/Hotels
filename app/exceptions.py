@@ -56,3 +56,8 @@ class BookingsCannotFound(BookingException):
 class ProhibitedDeleteException(BookingException):
     status_code = status.HTTP_409_CONFLICT
     detail = "Бронирование не найдено или не принадлежит пользователю"
+
+
+class WrongDatesRegistrationsException(BookingException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    detail = "Не верно указано время бронирования"

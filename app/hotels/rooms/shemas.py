@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class SRooms(BaseModel):
@@ -13,5 +13,4 @@ class SRooms(BaseModel):
     total_cost: int
     free_rooms: int
 
-    class Config:
-        from_attributes = True  # Для автоматического преобразования ORM-модели
+    model_config = ConfigDict(from_attributes=True)

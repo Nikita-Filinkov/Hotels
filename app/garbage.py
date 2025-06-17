@@ -49,6 +49,24 @@ from pydantic import parse_obj_as
 # Должен быть запущен worker
 # http://localhost:5555/
 
+# def get_current_user(token: str = Depends(oauth2_scheme)):
+#
+#     credentials_exception = HTTPException(
+#         status_code=status.HTTP_401_UNAUTHORIZED,
+#         detail="Could not validate credentials",
+#         headers={"WWW-Authenticate": "Bearer"},)
+#
+#     try:
+#         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+#         user_id = payload.get("sub")
+#         if user_id is None:
+#             raise credentials_exception
+#         user = UsersService.find_by_id(user_id)
+#     except InvalidTokenError:
+#         raise credentials_exception
+#
+#     return user
+
 from passlib.context import CryptContext
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 print(pwd_context.hash("test"))  # Должно работать без ошибок

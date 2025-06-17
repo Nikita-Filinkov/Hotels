@@ -1,9 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
-from fastapi import HTTPException, Request, Depends, status
+from fastapi import Request, Depends
 import jwt
-from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
-from jwt import PyJWTError, InvalidTokenError
+from fastapi.security import OAuth2PasswordBearer
 from app.config import settings
 from app.exceptions import (TokenExpiredException, TokenAbsentException, UserIdNotInJWTException,
                             UserNotFoundException, TokenInvalidFormatException)
@@ -24,12 +23,8 @@ async def get_current_user(
         token: str = Depends(get_jwt_token)
 ):
     payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-    # try:
-    #     payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-    # except InvalidTokenError:
-    #     raise TokenInvalidFormatException
     expire: str = payload.get('exp')
-    if not expire or int(expire) < datetime.utcnow().timestamp():
+    if not expire or int(expire) < datetime.now(timezone.utc).timestamp():
         raise TokenExpiredException
     user_id: str = payload.get('sub')
     if user_id is None:
@@ -39,20 +34,3 @@ async def get_current_user(
         raise UserNotFoundException
     return user
 
-# def get_current_user(token: str = Depends(oauth2_scheme)):
-#
-#     credentials_exception = HTTPException(
-#         status_code=status.HTTP_401_UNAUTHORIZED,
-#         detail="Could not validate credentials",
-#         headers={"WWW-Authenticate": "Bearer"},)
-#
-#     try:
-#         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-#         user_id = payload.get("sub")
-#         if user_id is None:
-#             raise credentials_exception
-#         user = UsersService.find_by_id(user_id)
-#     except InvalidTokenError:
-#         raise credentials_exception
-#
-#     return user

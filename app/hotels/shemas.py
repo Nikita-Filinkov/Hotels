@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from datetime import date
 from fastapi import Query
@@ -13,6 +13,8 @@ class SHotels(BaseModel):
     image_id: int
     free_rooms: int
 
+    model_config = ConfigDict(from_attributes=True)
+
 
 class SOneHotels(BaseModel):
     id: int
@@ -22,8 +24,7 @@ class SOneHotels(BaseModel):
     rooms_quantity: int
     image_id: int
 
-    class Config:
-        from_attributes = True  # Для автоматического преобразования ORM-модели
+    model_config = ConfigDict(from_attributes=True)
 
 
 class HotelsArgs:

@@ -12,6 +12,13 @@ class HotelsService(BaseService):
 
     @classmethod
     async def _get_booked_rooms(cls, date_from, date_to):
+        """ WITH booked_rooms AS (
+            SELECT *  FROM bookings
+            WHERE
+            (date_from <= '2023-05-15' AND date_to >= '2023-05-15') OR
+            (date_from >= '2023-05-15' AND date_from <= '2023-06-30')
+    )"""
+
         booked_rooms: CTE = select(Bookings.room_id).where(
             or_(
                 and_(
@@ -65,12 +72,7 @@ class HotelsService(BaseService):
             booked_rooms: CTE = await cls._get_booked_rooms(date_from, date_to)
 
             query = select(
-                cls.model.id,
-                cls.model.name,
-                cls.model.locations,
-                cls.model.services,
-                cls.model.rooms_quantity,
-                cls.model.image_id,
+                cls.model.__table__,
                 (
                     cls.model.rooms_quantity - func.count(booked_rooms.c.room_id)).label("free_rooms")
                 ).select_from(
@@ -78,7 +80,7 @@ class HotelsService(BaseService):
                 ).join(
                 Rooms, cls.model.id == Rooms.hotel_id
                 ).join(
-                booked_rooms, booked_rooms.c.room_id == Rooms.id
+                booked_rooms, booked_rooms.c.room_id == Rooms.id, isouter=True
                 ).where(
                 cls.model.locations == locations
                 ).group_by(
@@ -89,3 +91,16 @@ class HotelsService(BaseService):
 
             result = await session.execute(query)
             return result.mappings().all()
+
+
+    # @classmethod
+    # async def get_hotels_on_location(cls, locations, date_from, date_to):
+    #     async with async_session_maker() as session:
+    #         query = select(cls.model).where(cls.model.locations == locations)
+    #         result = await session.execute(query)
+    #         hotels = result.scalars().all()
+    #
+    #         if not hotels:
+    #             return []
+
+    #         return hotels
