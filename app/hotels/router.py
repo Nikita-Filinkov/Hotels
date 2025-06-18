@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-from datetime import date
+from datetime import date, timedelta
 from pydantic import parse_obj_as, TypeAdapter
 
 from fastapi import APIRouter, Depends, Query
@@ -41,7 +41,7 @@ async def hotels_on_location(
         date_from=date_from,
         date_to=date_to
     )
-    if date_from >= date_to:
+    if date_from >= date_to or date_to - date_from > timedelta(days=30):
         raise WrongDatesRegistrationsException
 
     result = [dict(TypeAdapter(SHotels).validate_python(hotel_data)) for hotel_data in free_hotels]
