@@ -1,9 +1,9 @@
 import os
+from base64 import b64encode
+from secrets import token_bytes
 from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from secrets import token_bytes
-from base64 import b64encode
 
 
 class Settings(BaseSettings):

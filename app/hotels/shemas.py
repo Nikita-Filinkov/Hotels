@@ -1,7 +1,8 @@
-from pydantic import BaseModel, ConfigDict
-from typing import Optional
 from datetime import date
+from typing import Optional
+
 from fastapi import Query
+from pydantic import BaseModel, ConfigDict
 
 
 class SHotels(BaseModel):

@@ -2,17 +2,16 @@ from __future__ import annotations
 
 import asyncio
 from datetime import date, timedelta
-from pydantic import parse_obj_as, TypeAdapter
 
 from fastapi import APIRouter, Depends, Query
-
 from fastapi_cache.decorator import cache
+from pydantic import TypeAdapter, parse_obj_as
 
-from app.exceptions import WrongDatesRegistrationsException
-from app.hotels.shemas import HotelsArgs, SOneHotels, SHotels
-from app.hotels.service import HotelsService
-from app.users.models import Users
 from app.bookings.dependencies import get_current_user
+from app.exceptions import WrongDatesRegistrationsException
+from app.hotels.service import HotelsService
+from app.hotels.shemas import HotelsArgs, SHotels, SOneHotels
+from app.users.models import Users
 
 router = APIRouter(
     prefix='/hotels',

@@ -1,11 +1,11 @@
-from fastapi import APIRouter, HTTPException, status, Response, Depends
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 
 from app.bookings.dependencies import get_current_user
-from app.exceptions import UserAlreadyExistsException, IncorrectEmailOrPasswordException
+from app.exceptions import IncorrectEmailOrPasswordException, UserAlreadyExistsException
+from app.users.auth import auth_user, create_access_token, get_password_hash
 from app.users.models import Users
 from app.users.service import UsersService
 from app.users.shemas import SUserAuth
-from app.users.auth import get_password_hash, auth_user, create_access_token
 
 router = APIRouter(
     prefix="/auth",

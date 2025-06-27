@@ -1,4 +1,5 @@
 import pytest
+
 from app.users.service import UsersService
 
 

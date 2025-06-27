@@ -1,15 +1,20 @@
 from datetime import datetime, timezone
 
-from fastapi import Request, Depends
 import jwt
+from fastapi import Depends, Request
 from fastapi.security import OAuth2PasswordBearer
+
 from app.config import settings
-from app.exceptions import (TokenExpiredException, TokenAbsentException, UserIdNotInJWTException,
-                            UserNotFoundException, TokenInvalidFormatException)
+from app.exceptions import (
+    TokenAbsentException,
+    TokenExpiredException,
+    TokenInvalidFormatException,
+    UserIdNotInJWTException,
+    UserNotFoundException,
+)
 from app.users.service import UsersService
 
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/loging")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
 def get_jwt_token(request: Request):

@@ -1,10 +1,9 @@
 import jwt
-
 from sqladmin.authentication import AuthenticationBackend
 from starlette.requests import Request
 
-from app.config import settings
 from app.authentification.auth import create_access_token
+from app.config import settings
 from app.users.auth import auth_user
 
 

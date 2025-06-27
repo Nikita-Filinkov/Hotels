@@ -1,8 +1,8 @@
+from sqlalchemy import update
+
 from app.database import async_session_maker
 from app.hotels.rooms.models import Rooms
 from app.service.base import BaseService
-
-from sqlalchemy import update
 
 
 class RoomsService(BaseService):

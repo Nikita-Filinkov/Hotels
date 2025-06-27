@@ -1,4 +1,5 @@
 from datetime import datetime
+from unittest.mock import MagicMock, patch
 
 import pytest
 from httpx import AsyncClient
@@ -33,8 +34,9 @@ async def test_add_booking(
     })
     assert response.status_code == status_code
 
-# async def test_auth_client(auth_asyncclient):
-#     response = await auth_asyncclient.get("/bookings")
-#     # print(response.status_code)
-#     # print(response.cookies)
-#     assert response
+
+async def test_auth_client(auth_asyncclient):
+    with patch('app.tasks.tasks.send_email_conformation_booking.delay', MagicMock()):
+        response = await auth_asyncclient.get("/bookings")
+        assert response.status_code == 200
+        assert "booking_access_token" in auth_asyncclient.cookies

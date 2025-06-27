@@ -1,20 +1,21 @@
 import asyncio
-from datetime import datetime
 import json
+import os
+from datetime import datetime
 
-from asgi_lifespan import LifespanManager
-from httpx import AsyncClient, ASGITransport
 import pytest
+from asgi_lifespan import LifespanManager
+from httpx import ASGITransport, AsyncClient
 from sqlalchemy import insert
 
-from app.database import Base, async_session_maker, engine
+from app.bookings.models import Bookings
 from app.config import settings
+from app.database import Base, async_session_maker, engine
 from app.hotels.models import Hotels
 from app.hotels.rooms.models import Rooms
-from app.users.models import Users
-from app.bookings.models import Bookings
 from app.main import app as fastapi_app
-import os
+from app.users.models import Users
+
 os.environ["MODE"] = "TEST"
 
 
@@ -82,7 +83,8 @@ async def auth_asyncclient():
             transport=ASGITransport(app=manager.app),
             base_url="http://test"
         ) as auth_ac:
-            await auth_ac.post(url='/auth/login', json={"email": "test@test.com", "password": "test"})
+            login_response = await auth_ac.post(url='/auth/login', json={"email": "test@test.com", "password": "test"})
+            auth_ac.cookies.update(login_response.cookies)
             yield auth_ac
 
 

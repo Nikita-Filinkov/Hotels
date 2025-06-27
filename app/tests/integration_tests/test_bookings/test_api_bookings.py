@@ -1,6 +1,7 @@
 
+from unittest.mock import MagicMock, patch
+
 from httpx import AsyncClient
-from unittest.mock import patch, MagicMock
 
 
 async def test_get_bookings(auth_asyncclient: AsyncClient):

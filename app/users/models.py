@@ -1,8 +1,9 @@
+from pydantic import ConfigDict
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 
 from app.database import Base
-from pydantic import ConfigDict
+
 
 class Users(Base):
     __tablename__ = 'users'

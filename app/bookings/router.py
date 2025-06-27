@@ -1,12 +1,16 @@
-from fastapi import APIRouter, Request, Depends
 from datetime import date
 
+from fastapi import APIRouter, Depends, Request
 from pydantic import parse_obj_as
 
 from app.bookings.dependencies import get_current_user
 from app.bookings.service import BookingsService
 from app.bookings.shemas import SBookings
-from app.exceptions import RoomCannotBeBooked, BookingsCannotFound, ProhibitedDeleteException
+from app.exceptions import (
+    BookingsCannotFound,
+    ProhibitedDeleteException,
+    RoomCannotBeBooked,
+)
 from app.tasks.tasks import send_email_conformation_booking
 from app.users.models import Users
 from app.users.shemas import UserShortResponse
@@ -45,7 +49,7 @@ async def add_booking(
         raise RoomCannotBeBooked
 
 
-@router.delete('/{booking_id}', status_code=204)
+@router.delete('/delete-{booking_id}', status_code=204)
 async def delete_booking(
         booking_id: int,
         user: Users = Depends(get_current_user)

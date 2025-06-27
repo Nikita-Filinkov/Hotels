@@ -4,15 +4,12 @@ import asyncio
 from datetime import date
 
 from fastapi import APIRouter, Depends, Query
-
 from fastapi_cache.decorator import cache
-
-from app.hotels.shemas import HotelsArgs, SOneHotels, SHotels
-from app.hotels.service import HotelsService
-
+from passlib.context import CryptContext
 from pydantic import parse_obj_as
 
-
+from app.hotels.service import HotelsService
+from app.hotels.shemas import HotelsArgs, SHotels, SOneHotels
 
 # @router.post('/loging')
 # async def loging_user(response: Response, user_date: SUserAuth):
@@ -67,6 +64,5 @@ from pydantic import parse_obj_as
 #
 #     return user
 
-from passlib.context import CryptContext
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 print(pwd_context.hash("test"))  # Должно работать без ошибок

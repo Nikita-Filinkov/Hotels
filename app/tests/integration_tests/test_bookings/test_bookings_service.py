@@ -1,6 +1,8 @@
-import pytest
-from app.bookings.service import BookingsService
 from datetime import datetime
+
+import pytest
+
+from app.bookings.service import BookingsService
 
 
 async def test_add_and_get_booking():
@@ -35,7 +37,6 @@ async def test_get_and_delete_user_bookings(
 ):
     user_bookings = await BookingsService.get_bookings_user(user_id=user_id)
     bookings_list = user_bookings.mappings().all()
-    print(bookings_list)
     assert bookings_list
     assert bookings_list[0].user_id == user_id
     for booking in bookings_list:

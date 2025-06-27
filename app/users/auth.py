@@ -8,8 +8,8 @@ from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
 from pydantic import BaseModel, EmailStr
 
-from app.users.service import UsersService
 from app.config import settings
+from app.users.service import UsersService
 
 SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = settings.ALGORITHM

@@ -1,8 +1,9 @@
 from email.message import EmailMessage
-from app.config import settings
-from pydantic import EmailStr
-from jinja2 import Environment, FileSystemLoader
 
+from jinja2 import Environment, FileSystemLoader
+from pydantic import EmailStr
+
+from app.config import settings
 
 env = Environment(loader=FileSystemLoader("app/templates"))
 

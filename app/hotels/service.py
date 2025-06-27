@@ -1,10 +1,10 @@
+from sqlalchemy import CTE, and_, func, or_, select, update
+
 from app.bookings.models import Bookings
 from app.database import async_session_maker
 from app.hotels.models import Hotels
 from app.hotels.rooms.models import Rooms
 from app.service.base import BaseService
-
-from sqlalchemy import update, select, and_, or_, func, CTE
 
 
 class HotelsService(BaseService):
