@@ -9,7 +9,7 @@ from app.bookings.shemas import SBookings
 from app.exceptions import (
     BookingsCannotFound,
     ProhibitedDeleteException,
-    RoomCannotBeBooked,
+    RoomCannotBeBooked, ErrorBookingService,
 )
 from app.tasks.tasks import send_email_conformation_booking
 from app.users.models import Users
@@ -26,9 +26,11 @@ async def get_bookings(user: Users = Depends(get_current_user)):
     bookings = await BookingsService.get_bookings_user(user_id=user.id)
     if not bookings:
         raise BookingsCannotFound
+    elif isinstance(bookings, ErrorBookingService):
+        raise ErrorBookingService
     bookings_list = [dict(row) for row in bookings.mappings().all()]
-    email = "civar34444@firain.com"
-    send_email_conformation_booking.delay(bookings_list, email)
+    # email = "civar34444@firain.com"
+    # send_email_conformation_booking.delay(bookings_list, email)
     return bookings_list
 
 
@@ -47,6 +49,8 @@ async def add_booking(
     booking = await BookingsService.add(user.id, room_id, date_from, date_to)
     if not booking:
         raise RoomCannotBeBooked
+    if isinstance(booking, ErrorBookingService):
+        raise ErrorBookingService
 
 
 @router.delete('/delete-{booking_id}', status_code=204)
