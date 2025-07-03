@@ -161,3 +161,4 @@ cython_debug/
 /think/posts/garbage.py
 /think/users/garbage.py
 /app/garbage.py
+/.env-non-dev

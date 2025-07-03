@@ -1,7 +1,7 @@
 from datetime import date
 
 from fastapi import APIRouter, Depends, Request
-from pydantic import parse_obj_as
+from fastapi_versioning import version
 
 from app.bookings.dependencies import get_current_user
 from app.bookings.service import BookingsService
@@ -22,6 +22,7 @@ router = APIRouter(
 
 
 @router.get('', response_model=list[SBookings])
+@version(1)
 async def get_bookings(user: Users = Depends(get_current_user)):
     bookings = await BookingsService.get_bookings_user(user_id=user.id)
     if not bookings:
@@ -29,8 +30,8 @@ async def get_bookings(user: Users = Depends(get_current_user)):
     elif isinstance(bookings, ErrorBookingService):
         raise ErrorBookingService
     bookings_list = [dict(row) for row in bookings.mappings().all()]
-    # email = "civar34444@firain.com"
-    # send_email_conformation_booking.delay(bookings_list, email)
+    email = "ciezar@lary-lcc.click"
+    send_email_conformation_booking.delay(bookings_list, email)
     return bookings_list
 
 
@@ -40,6 +41,7 @@ def get_bookings2(bookings_id):
 
 
 @router.post('/add')
+@version(1)
 async def add_booking(
         room_id: int,
         date_from: date,
@@ -54,6 +56,7 @@ async def add_booking(
 
 
 @router.delete('/delete-{booking_id}', status_code=204)
+@version(1)
 async def delete_booking(
         booking_id: int,
         user: Users = Depends(get_current_user)
