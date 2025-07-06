@@ -29,11 +29,12 @@ async def add_hotel(table_name: str, file: UploadFile):
     else:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Не корректные данные')
 
-    contents = await file.read()
-    data = json.loads(contents)
-
-    if not tabel:
+    try:
+        contents = await file.read()
+        data = json.loads(contents)
+    except Exception:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Не корректные данные')
+    
     async with async_session_maker() as session:
         add_hotels = insert(tabel).values(data)
         await session.execute(add_hotels)
