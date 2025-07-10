@@ -9,11 +9,11 @@ services:
     ports:
       - "5432:5432"
 
-#  redis:
-#    image: redis:7.2-alpine
-#    container_name: booking_redis
-#    ports:
-#      - "6379:6379"
+  redis:
+    image: redis:7.2-alpine
+    container_name: booking_redis
+    ports:
+      - "6379:6379"
 
   booking:
     build:
@@ -28,45 +28,45 @@ services:
       - "9000:8000"
     command: [ "/booking/docker/app.sh" ]
 
-#  celery:
-#    build: .
-#    env_file:
-#      - .env-non-dev
-#    depends_on:
-#      - redis
-#    command: ["/booking/docker/celery.sh", "celery"]
-#
-#  flower:
-#    build: .
-#    env_file:
-#      - .env-non-dev
-#    depends_on:
-#      - redis
-#      - celery
-#    ports:
-#      - "5555:5555"
-#    command: ["/booking/docker/celery.sh", "flower"]
-#
-#  prometheus:
-#    image: prom/prometheus:v2.43.0
-#    container_name: prometheus
-#    volumes:
-#      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-#      - prometheusdata:/prometheus
-#    restart: unless-stopped
-#    ports:
-#      - 9090:9090
-#
-#  grafana:
-#    image: grafana/grafana:9.4.7
-#    container_name: grafana
-#    volumes:
-#      - grafanadata:/var/lib/grafana
-#    restart: unless-stopped
-#    ports:
-#      - 3000:3000
+  celery:
+    build: .
+    env_file:
+      - .env-non-dev
+    depends_on:
+      - redis
+    command: ["/booking/docker/celery.sh", "celery"]
+
+  flower:
+    build: .
+    env_file:
+      - .env-non-dev
+    depends_on:
+      - redis
+      - celery
+    ports:
+      - "5555:5555"
+    command: ["/booking/docker/celery.sh", "flower"]
+
+  prometheus:
+    image: prom/prometheus:v2.43.0
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheusdata:/prometheus
+    restart: unless-stopped
+    ports:
+      - 9090:9090
+
+  grafana:
+    image: grafana/grafana:9.4.7
+    container_name: grafana
+    volumes:
+      - grafanadata:/var/lib/grafana
+    restart: unless-stopped
+    ports:
+      - 3000:3000
 
 volumes:
   postgresdata:
-#  grafanadata:
-#  prometheusdata:
+  grafanadata:
+  prometheusdata:
