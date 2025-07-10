@@ -162,3 +162,4 @@ cython_debug/
 /think/users/garbage.py
 /app/garbage.py
 /.env-non-dev
+/.env-render
