@@ -1,7 +1,9 @@
 import os
 from base64 import b64encode
 from secrets import token_bytes
-from typing import Literal, Optional
+from typing import Literal
+
+from urllib.parse import quote
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -10,7 +12,7 @@ class Settings(BaseSettings):
     MODE: Literal["DEV", "TEST", "PROD"]
     LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
-    DATABASE_URL: Optional[str] = None
+    DATABASE_URL: str | None = None
 
     DB_HOST: str = "db"
     DB_PORT: int = 5432
@@ -35,22 +37,22 @@ class Settings(BaseSettings):
     SMTP_EMAIL: str
     SMTP_PASS: str
 
-    model_config = SettingsConfigDict(
-        env_file=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env"),
-        extra='ignore'
-    )
+    # model_config = SettingsConfigDict(
+    #     env_file=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env"),
+    #     extra='ignore'
+    # )
+
+    @property
+    def database_url(self):
+        if self.MODE == "PROD":
+            return f"postgresql+asyncpg://{self.DB_USER}:{quote(self.DB_PASS)}@{self.DB_HOST}/{self.DB_NAME}"
+        elif self.MODE == "TEST":
+            return f"postgresql+asyncpg://{self.TEST_DB_USER}:{quote(self.TEST_DB_PASS)}@{self.TEST_DB_HOST}:{self.TEST_DB_PORT}/{self.TEST_DB_NAME}"
+        return f"postgresql+asyncpg://{self.DB_USER}:{quote(self.DB_PASS)}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 
 settings = Settings()
 
 
-def get_db_url():
-    if settings.DATABASE_URL:
-        return settings.DATABASE_URL
-    return (f"postgresql+asyncpg://{settings.DB_USER}:{settings.DB_PASS}@"
-            f"{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}")
-
-
-def test_get_db_url():
-    return (f"postgresql+asyncpg://{settings.TEST_DB_USER}:{settings.TEST_DB_PASS}@"
-            f"{settings.TEST_DB_HOST}:{settings.TEST_DB_PORT}/{settings.TEST_DB_NAME}")
