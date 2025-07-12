@@ -12,7 +12,7 @@ from app.exceptions import (
     RoomCannotBeBooked, ErrorBookingService,
 )
 from app.tasks.tasks import send_email_conformation_booking
-from app.users.models import Users
+from app.users.models import User
 from app.users.shemas import UserShortResponse
 
 router = APIRouter(
@@ -23,7 +23,7 @@ router = APIRouter(
 
 @router.get('', response_model=list[SBookings])
 @version(1)
-async def get_bookings(user: Users = Depends(get_current_user)):
+async def get_bookings(user: User = Depends(get_current_user)):
     bookings = await BookingsService.get_bookings_user(user_id=user.id)
     if not bookings:
         raise BookingsCannotFound
@@ -46,7 +46,7 @@ async def add_booking(
         room_id: int,
         date_from: date,
         date_to: date,
-        user: Users = Depends(get_current_user)
+        user: User = Depends(get_current_user)
 ):
     booking = await BookingsService.add(user.id, room_id, date_from, date_to)
     if not booking:
@@ -59,7 +59,7 @@ async def add_booking(
 @version(1)
 async def delete_booking(
         booking_id: int,
-        user: Users = Depends(get_current_user)
+        user: User = Depends(get_current_user)
 ):
     deleted_entry = await BookingsService.delete_one_entry(id=booking_id, user_id=user.id)
     if not deleted_entry:

@@ -28,7 +28,7 @@ from app.images.router import router as router_images
 from app.pages.router import router as router_pages
 from app.importer.router import router as router_importer_hotels
 from app.prometheus.router import router as router_prometheus
-from app.users.models import Users
+from app.users.models import User
 from app.users.router import router as router_users
 
 

@@ -11,7 +11,7 @@ from app.bookings.dependencies import get_current_user
 from app.exceptions import WrongDatesRegistrationsException
 from app.hotels.service import HotelsService
 from app.hotels.shemas import HotelsArgs, SHotels, SOneHotels
-from app.users.models import Users
+from app.users.models import User
 
 router = APIRouter(
     prefix='/hotels',

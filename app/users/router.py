@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status
 from app.bookings.dependencies import get_current_user
 from app.exceptions import IncorrectEmailOrPasswordException, UserAlreadyExistsException
 from app.users.auth import auth_user, create_access_token, get_password_hash
-from app.users.models import Users
+from app.users.models import User
 from app.users.service import UsersService
 from app.users.shemas import SUserAuth
 
@@ -39,5 +39,5 @@ async def logout_user(response: Response):
 
 
 @router.get('/me')
-async def read_users_me(current_user: Users = Depends(get_current_user)):
+async def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user

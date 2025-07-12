@@ -16,7 +16,7 @@ class Bookings(Base):
     total_cost = Column(Integer, Computed("(date_to - date_from) * price"))
     total_days = Column(Integer, Computed("date_to - date_from"))
 
-    user = relationship("Users", back_populates="booking")
+    user = relationship("User", back_populates="booking")
     room = relationship("Rooms", back_populates="booking")
 
     def __str__(self):

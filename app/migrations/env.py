@@ -16,7 +16,7 @@ from app.bookings.models import Bookings # noqa
 from app.database import Base
 from app.hotels.models import Hotels # noqa
 from app.hotels.rooms.models import Rooms # noqa
-from app.users.models import Users # noqa
+from app.users.models import User # noqa
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

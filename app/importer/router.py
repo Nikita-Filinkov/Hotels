@@ -7,7 +7,7 @@ from app.bookings.models import Bookings
 from app.database import async_session_maker
 from app.hotels.models import Hotels
 from app.hotels.rooms.models import Rooms
-from app.users.models import Users
+from app.users.models import User
 
 router = APIRouter(
     prefix='/import',
@@ -23,7 +23,7 @@ async def add_hotel(table_name: str, file: UploadFile):
     elif table_name == 'rooms':
         tabel = Rooms
     elif table_name == 'users':
-        tabel = Users
+        tabel = User
     elif table_name == 'bookings':
         tabel = Bookings
     else:

@@ -3,13 +3,13 @@ from sqladmin import ModelView
 from app.bookings.models import Bookings
 from app.hotels.models import Hotels
 from app.hotels.rooms.models import Rooms
-from app.users.models import Users
+from app.users.models import User
 
 
-class UsersAdmin(ModelView, model=Users):
-    column_list = [Users.id, Users.email] + [Users.booking]
+class UsersAdmin(ModelView, model=User):
+    column_list = [User.id, User.email] + [User.booking]
     can_delete = False
-    column_details_exclude_list = [Users.hashed_password]
+    column_details_exclude_list = [User.hashed_password]
     name = "Пользователь"
     name_plural = "Пользователи"
     icon = "fa-regular fa-circle-user"

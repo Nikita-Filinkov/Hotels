@@ -2,12 +2,12 @@ from sqlalchemy import select
 
 from app.database import async_session_maker
 from app.service.base import BaseService
-from app.users.models import Users
+from app.users.models import User
 from app.users.shemas import UserShortResponse
 
 
 class UsersService(BaseService):
-    model = Users
+    model = User
 
     @classmethod
     async def find_by_id(cls, model_id: int):

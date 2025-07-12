@@ -14,7 +14,7 @@ from app.database import Base, async_session_maker, engine
 from app.hotels.models import Hotels
 from app.hotels.rooms.models import Rooms
 from app.main import app as fastapi_app
-from app.users.models import Users
+from app.users.models import User
 
 os.environ["MODE"] = "TEST"
 
@@ -45,7 +45,7 @@ async def prepare_database():
     async with async_session_maker() as session:
         add_hotels = insert(Hotels).values(mock_values_hotels)
         add_rooms = insert(Rooms).values(mock_values_rooms)
-        add_users = insert(Users).values(mock_values_users)
+        add_users = insert(User).values(mock_values_users)
         add_bookings = insert(Bookings).values(mock_values_bookings)
 
         await session.execute(add_hotels)
