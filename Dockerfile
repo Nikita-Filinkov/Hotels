@@ -13,7 +13,7 @@ WORKDIR /booking
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt && \
-    pip install alembic  # Явная установка alembic
+    pip install alembic
 
 
 COPY . .
