@@ -1,17 +1,26 @@
 FROM python:3.12
 
-RUN apt-get update && apt-get install -y netcat-traditional && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir /booking
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    postgresql-client \
+    netcat-traditional && \
+    rm -rf /var/lib/apt/lists/*
+
 
 WORKDIR /booking
 
-COPY requirements.txt .
 
-RUN pip install -r requirements.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt && \
+    pip install alembic  # Явная установка alembic
+
 
 COPY . .
 
-RUN chmod a+x /booking/docker/*.sh
 
-CMD ["gunicorn", "app.main:app", "--workers", "1", "--worker-class", "uvicorn.workers.UvicornWorker", "--bind=0.0.0.0:8000"]
+RUN chmod a+x app.sh && \
+    chmod a+x docker/*.sh
+
+
+CMD ["./app.sh"]
