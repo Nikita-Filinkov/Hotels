@@ -23,4 +23,4 @@ RUN chmod a+x app.sh && \
     chmod a+x docker/*.sh
 
 
-CMD ["./app.sh"]
+CMD ["/booking/app.sh"]
