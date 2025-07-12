@@ -1,10 +1,23 @@
 #!/bin/bash
 
 
+set -e
+
 MAX_RETRIES=30
 RETRY_DELAY=2
 
+
+if [ -z "$DATABASE_URL" ]; then
+  echo "Ошибка: Переменная DATABASE_URL не установлена!"
+  exit 1
+fi
+
 POSTGRES_HOST=$(echo "$DATABASE_URL" | sed -r 's/.*@([^:]+):.*/\1/')
+
+if [ -z "$POSTGRES_HOST" ]; then
+  echo "Ошибка: Не удалось извлечь host из DATABASE_URL!"
+  exit 1
+fi
 
 echo "Ожидание доступности PostgreSQL на $POSTGRES_HOST..."
 for i in $(seq 1 $MAX_RETRIES); do
@@ -26,7 +39,6 @@ if ! timeout 300 alembic upgrade head; then
   echo "Ошибка: Миграции не применились за отведенное время!"
   exit 1
 fi
-
 
 echo "Запуск Gunicorn..."
 exec gunicorn app.main:app \

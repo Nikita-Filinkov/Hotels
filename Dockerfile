@@ -10,6 +10,8 @@ RUN apt-get update && \
 
 WORKDIR /booking
 
+ENV DATABASE_URL=postgresql+asyncpg://nikita:3J8GLDKG0hGNDAmCHDN02yXMDIFT%3ARzw@dpg-dInv77c9e44c73er59dg-a.frankfurt-postgres.render.com/booking_db_84nx?ssl=require&timeout=30
+
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt && \
@@ -18,9 +20,7 @@ RUN pip install --no-cache-dir -r requirements.txt && \
 
 COPY . .
 
-
-RUN chmod a+x app.sh && \
-    chmod a+x docker/*.sh
+RUN chmod +x docker/app.sh
 
 
-CMD ["/booking/app.sh"]
+CMD ["./docker/app.sh"]
