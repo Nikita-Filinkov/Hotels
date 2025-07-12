@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-MAX_RETRIES=30
+MAX_RETRIES=60
 RETRY_DELAY=2
 
 # Проверка DATABASE_URL
@@ -11,14 +11,14 @@ if [ -z "$DATABASE_URL" ]; then
 fi
 
 
-POSTGRES_HOST=$(echo "$DATABASE_URL" | sed -r 's/.*@([^/]+).*/\1/')
+DECODED_DB_URL=$(printf '%b' "${DATABASE_URL//%/\\x}")
 
-POSTGRES_HOST=$(echo "$POSTGRES_HOST" | cut -d: -f1)
 
-echo "Ожидание доступности PostgreSQL на $POSTGRES_HOST (с SSL)..."
+PSQL_URL=$(echo "$DECODED_DB_URL" | sed 's/postgresql+asyncpg/postgresql/g')
 
+echo "Ожидание доступности PostgreSQL..."
 for i in $(seq 1 $MAX_RETRIES); do
-  if psql "$DATABASE_URL" -c "SELECT 1" >/dev/null 2>&1; then
+  if psql "$PSQL_URL" -c "SELECT 1" >/dev/null 2>&1; then
     echo "PostgreSQL доступен!"
     break
   fi
@@ -28,18 +28,15 @@ for i in $(seq 1 $MAX_RETRIES); do
   if [ $i -eq $MAX_RETRIES ]; then
     echo "Ошибка: PostgreSQL не доступен после $MAX_RETRIES попыток!"
     echo "Проверьте:"
-    echo "1. Правильность DATABASE_URL"
-    echo "2. Доступность базы из сети (возможно, нужно добавить ваш IP в белый список)"
-    echo "3. SSL параметры"
+    echo "1. DATABASE_URL в настройках Render"
+    echo "2. Доступность БД в панели Render"
+    echo "3. WhiteList IP в настройках БД"
     exit 1
   fi
 done
 
-echo "Применение миграций Alembic..."
-if ! timeout 300 alembic upgrade head; then
-  echo "Ошибка: Миграции не применились за отведенное время!"
-  exit 1
-fi
+echo "Применение миграций..."
+alembic upgrade head
 
 echo "Запуск Gunicorn..."
 exec gunicorn app.main:app \
@@ -47,7 +44,8 @@ exec gunicorn app.main:app \
   --worker-class uvicorn.workers.UvicornWorker \
   --bind 0.0.0.0:8000 \
   --timeout 120 \
-  --preload
+  --access-logfile - \
+  --error-logfile -
 
 #while ! nc -z db 5432; do sleep 1; done
 #
