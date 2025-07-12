@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     MODE: Literal["DEV", "TEST", "PROD"]
     LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
+    DATABASE_URL: str = None
+
     DB_HOST: str = "db"
     DB_PORT: int = 5432
     DB_NAME: str
@@ -43,6 +45,8 @@ settings = Settings()
 
 
 def get_db_url():
+    if settings.DATABASE_URL:
+        return settings.DATABASE_URL
     return (f"postgresql+asyncpg://{settings.DB_USER}:{settings.DB_PASS}@"
             f"{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}")
 
