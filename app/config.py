@@ -14,11 +14,11 @@ class Settings(BaseSettings):
 
     DATABASE_URL: str | None = None
 
-    DB_HOST: str = "db"
+    DB_HOST: str = ""
     DB_PORT: int = 5432
-    DB_NAME: str
-    DB_USER: str
-    DB_PASS: str
+    DB_NAME: str = ""
+    DB_USER: str = ""
+    DB_PASS: str = ""
 
     TEST_DB_HOST: str = "db"
     TEST_DB_PORT: int = 5432
