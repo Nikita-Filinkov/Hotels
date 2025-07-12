@@ -1,27 +1,24 @@
 #!/bin/bash
-
-
 set -e
 
 MAX_RETRIES=30
 RETRY_DELAY=2
 
-
+# Проверка DATABASE_URL
 if [ -z "$DATABASE_URL" ]; then
-  echo "Ошибка: Переменная DATABASE_URL не установлена!"
+  echo "Ошибка: DATABASE_URL не установлена!"
   exit 1
 fi
 
-POSTGRES_HOST=$(echo "$DATABASE_URL" | sed -r 's/.*@([^:]+):.*/\1/')
 
-if [ -z "$POSTGRES_HOST" ]; then
-  echo "Ошибка: Не удалось извлечь host из DATABASE_URL!"
-  exit 1
-fi
+POSTGRES_HOST=$(echo "$DATABASE_URL" | sed -r 's/.*@([^/]+).*/\1/')
 
-echo "Ожидание доступности PostgreSQL на $POSTGRES_HOST..."
+POSTGRES_HOST=$(echo "$POSTGRES_HOST" | cut -d: -f1)
+
+echo "Ожидание доступности PostgreSQL на $POSTGRES_HOST (с SSL)..."
+
 for i in $(seq 1 $MAX_RETRIES); do
-  if pg_isready -h "$POSTGRES_HOST" -p 5432 -q; then
+  if psql "$DATABASE_URL" -c "SELECT 1" >/dev/null 2>&1; then
     echo "PostgreSQL доступен!"
     break
   fi
@@ -29,12 +26,16 @@ for i in $(seq 1 $MAX_RETRIES); do
   sleep $RETRY_DELAY
 
   if [ $i -eq $MAX_RETRIES ]; then
-    echo "Ошибка: PostgreSQL не стал доступен после $MAX_RETRIES попыток!"
+    echo "Ошибка: PostgreSQL не доступен после $MAX_RETRIES попыток!"
+    echo "Проверьте:"
+    echo "1. Правильность DATABASE_URL"
+    echo "2. Доступность базы из сети (возможно, нужно добавить ваш IP в белый список)"
+    echo "3. SSL параметры"
     exit 1
   fi
 done
 
-echo "Применение миграций Alembic (с таймаутом 5 минут)..."
+echo "Применение миграций Alembic..."
 if ! timeout 300 alembic upgrade head; then
   echo "Ошибка: Миграции не применились за отведенное время!"
   exit 1
