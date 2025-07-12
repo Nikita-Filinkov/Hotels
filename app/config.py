@@ -1,7 +1,7 @@
 import os
 from base64 import b64encode
 from secrets import token_bytes
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     MODE: Literal["DEV", "TEST", "PROD"]
     LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
-    DATABASE_URL: str = None
+    DATABASE_URL: Optional[str] = None
 
     DB_HOST: str = "db"
     DB_PORT: int = 5432
