@@ -60,6 +60,7 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    op.execute("COMMIT")
     # ### end Alembic commands ###
 
 
