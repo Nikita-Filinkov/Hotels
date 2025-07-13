@@ -5,12 +5,15 @@ sleep 5
 
 
 
-DB_URL=$(echo $DATABASE_URL | sed 's/postgresql+asyncpg/postgresql/g')
+DB_URL=$(echo $DATABASE_URL | sed 's/postgresql+asyncpg/postgresql/g' | cut -d '?' -f 1)
+
 
 echo "Проверка подключения к PostgreSQL..."
 until pg_isready -d "$DB_URL"; do
     sleep 1
 done
+
+
 echo "Применение миграций Alembic..."
 alembic upgrade head
 
