@@ -5,11 +5,11 @@ sleep 5
 
 
 
-DB_HOST=$(echo $DATABASE_URL | awk -F[@] '{print $2}' | awk -F[/] '{print $1}' | awk -F[:] '{print $1}')
-DB_PORT=$(echo $DATABASE_URL | awk -F[@] '{print $2}' | awk -F[/] '{print $1}' | awk -F[:] '{print $2}')
-DB_NAME=$(echo $DATABASE_URL | awk -F[/] '{print $NF}' | awk -F[?] '{print $1}')
-DB_USER=$(echo $DATABASE_URL | awk -F[/] '{print $3}' | awk -F[:] '{print $1}')
-DB_PASS=$(echo $DATABASE_URL | awk -F[/] '{print $3}' | awk -F[:] '{print $2}' | awk -F[@] '{print $1}')
+DB_HOST=$(echo $DATABASE_URL | sed 's/.*@\([^:/]*\).*/\1/')
+DB_PORT=$(echo $DATABASE_URL | sed 's/.*:\([0-9]\{4,\}\).*/\1/' | cut -d'/' -f1)
+DB_NAME=$(echo $DATABASE_URL | sed 's/.*\/\([^?]*\).*/\1/')
+DB_USER=$(echo $DATABASE_URL | sed 's/.*\/\/\([^:]*\).*/\1/')
+DB_PASS=$(echo $DATABASE_URL | sed 's/.*\/\/[^:]*:\([^@]*\).*/\1/')
 
 
 echo "Проверка подключения к PostgreSQL..."
