@@ -4,22 +4,33 @@ set -e
 sleep 5
 
 
+if [ -z "$DATABASE_URL" ]; then
+    echo "ОШИБКА: Переменная DATABASE_URL не установлена!"
+    exit 1
+fi
 
-DB_HOST=$(echo $DATABASE_URL | sed 's/.*@\([^:/]*\).*/\1/')
-DB_PORT=$(echo $DATABASE_URL | sed 's/.*:\([0-9]\{4,\}\).*/\1/' | cut -d'/' -f1)
-DB_NAME=$(echo $DATABASE_URL | sed 's/.*\/\([^?]*\).*/\1/')
-DB_USER=$(echo $DATABASE_URL | sed 's/.*\/\/\([^:]*\).*/\1/')
-DB_PASS=$(echo $DATABASE_URL | sed 's/.*\/\/[^:]*:\([^@]*\).*/\1/')
+DB_HOST=$(echo $DATABASE_URL | awk -F[@] '{print $2}' | awk -F[/] '{print $1}' | awk -F[:] '{print $1}')
+DB_PORT=$(echo $DATABASE_URL | awk -F[@] '{print $2}' | awk -F[/] '{print $1}' | awk -F[:] '{print $2}')
+DB_NAME=$(echo $DATABASE_URL | awk -F[/] '{print $NF}' | awk -F[?] '{print $1}')
+DB_USER=$(echo $DATABASE_URL | awk -F[/] '{print $3}' | awk -F[:] '{print $1}')
+DB_PASS=$(echo $DATABASE_URL | awk -F[/] '{print $3}' | awk -F[:] '{print $2}' | awk -F[@] '{print $1}')
 
-
-echo "Проверка подключения к PostgreSQL..."
-until pg_isready -d "$DB_URL"; do
-    sleep 1
+echo "Проверка подключения к PostgreSQL ($DB_HOST:$DB_PORT)..."
+until nc -z -w 5 $DB_HOST $DB_PORT; do
+    echo "Ожидание PostgreSQL..."
+    sleep 2
 done
-
 
 echo "Применение миграций Alembic..."
 alembic upgrade head
+
+echo "Проверка таблицы users..."
+if ! PGPASSWORD="$DB_PASS" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -c "\dt users" | grep -q "public.*users"; then
+    echo "ОШИБКА: таблица users не найдена!"
+    echo "Список всех таблиц в базе $DB_NAME:"
+    PGPASSWORD="$DB_PASS" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -c "\dt"
+    exit 1
+fi
 
 
 echo "Проверка таблицы users..."

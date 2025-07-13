@@ -1,10 +1,9 @@
 FROM python:3.12
 
-RUN apt-get update && apt-get install -y postgresql-client netcat
-
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     postgresql-client \
+    netcat-openbsd \
     libpq-dev \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
