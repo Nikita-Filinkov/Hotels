@@ -4,13 +4,13 @@ set -e
 sleep 5
 
 
-# Проверка подключения к PostgreSQL
+
+DB_URL=$(echo $DATABASE_URL | sed 's/postgresql+asyncpg/postgresql/g')
+
 echo "Проверка подключения к PostgreSQL..."
-until pg_isready -d $DATABASE_URL; do
+until pg_isready -d "$DB_URL"; do
     sleep 1
 done
-
-
 echo "Применение миграций Alembic..."
 alembic upgrade head
 
