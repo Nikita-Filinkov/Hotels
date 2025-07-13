@@ -9,20 +9,27 @@ if [ -z "$DATABASE_URL" ]; then
     exit 1
 fi
 
+
 DB_HOST=$(echo $DATABASE_URL | awk -F[@] '{print $2}' | awk -F[/] '{print $1}' | awk -F[:] '{print $1}')
 DB_PORT=$(echo $DATABASE_URL | awk -F[@] '{print $2}' | awk -F[/] '{print $1}' | awk -F[:] '{print $2}')
 DB_NAME=$(echo $DATABASE_URL | awk -F[/] '{print $NF}' | awk -F[?] '{print $1}')
 DB_USER=$(echo $DATABASE_URL | awk -F[/] '{print $3}' | awk -F[:] '{print $1}')
 DB_PASS=$(echo $DATABASE_URL | awk -F[/] '{print $3}' | awk -F[:] '{print $2}' | awk -F[@] '{print $1}')
 
+
+DB_PORT=${DB_PORT:-5432}
+
+
 echo "Проверка подключения к PostgreSQL ($DB_HOST:$DB_PORT)..."
-until nc -z -w 5 $DB_HOST $DB_PORT; do
-    echo "Ожидание PostgreSQL..."
+until pg_isready -h "$DB_HOST" -p "$DB_PORT"; do
+    echo "Ожидание PostgreSQL ($DB_HOST:$DB_PORT)..."
     sleep 2
 done
 
+
 echo "Применение миграций Alembic..."
 alembic upgrade head
+
 
 echo "Проверка таблицы users..."
 if ! PGPASSWORD="$DB_PASS" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -c "\dt users" | grep -q "public.*users"; then
@@ -32,12 +39,6 @@ if ! PGPASSWORD="$DB_PASS" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$D
     exit 1
 fi
 
-
-echo "Проверка таблицы users..."
-psql $DATABASE_URL -c "\dt" | grep users || {
-    echo "Ошибка: таблица users не найдена!"
-    exit 1
-}
 
 exec gunicorn app.main:app \
     --workers 1 \
